@@ -3,11 +3,11 @@ let express = require('express');
 let bodyParser = require('body-parser');
 
 // library imports kept a line-space from local imports
-let {mongoose} = require('./db//mongoose');
+let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
 
-var app = express();
+const app = express();
 
 app.use(bodyParser.json());
 

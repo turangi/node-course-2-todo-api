@@ -37,7 +37,7 @@ const {User} = require('./../server/models/user');
 // case where the user *was* found -print user to screen
 // handle any errors that might have occurred.  Print error to screen.
 
-let id = '592e4a91ca81f9799e028f2';
+let id = '592e4a91ca81f9799e028f27';
 
 if (!ObjectID.isValid(id)) {
   console.log('ID not valid');

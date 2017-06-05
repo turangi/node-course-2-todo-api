@@ -1,13 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const {ObjectID} = require('mongodb');
 
 const {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
 
-const app = express
+const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
@@ -50,7 +49,7 @@ app.get('/todos/:id', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(port, () => {
   console.log(`Started up at port ${port}`);
 });
 

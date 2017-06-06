@@ -44,7 +44,6 @@ describe('POST /todos', () => {
   });
 
   it('should not create todo with invalid body data', (done) => {
-
       request(app)
       .post('/todos')
       .send({})
@@ -76,15 +75,16 @@ describe('POST /todos', () => {
 
   describe('GET /todos/:id', () => {
     it('should return todo doc', (done) => {
-      request(app)  // initiate supertest request
+        request(app)  // initiate supertest request
         .get(`/todos/${todos[0]._id.toHexString()}`)
         .expect(200)
         .expect((res) => {
           expect(res.body.todo.text).toBe(todos[0].text);
         })
         .end(done);
-    })
-  it('should return a 404 if todo not found', (done) => {
+    });
+
+  it('should return 404 if todo not found', (done) => {
     let hexId = new ObjectID().toHexString();
 
     request(app)
@@ -98,20 +98,45 @@ describe('POST /todos', () => {
       .get('/todos/123abc')
       .expect(404)
       .end(done);
-  })
+  });
 });
 
+describe('DELETE /todos/:id', () => {
+  it('should remove a todo', (done) => {
+    let hexId = todos[1]._id.toHexString();
 
+    request(app)
+      .delete(`/todos/${hexId}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo._id).toBe(hexId);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-// Lecture 79 Notes:
-/*  In this lecture, we'll be creating three test cases for the route that
-    fetches an individual Todo item.
-    The three tests verify that:
-  1)  When we pass in an invalid ObjectID, we get a 404 response.
+        Todo.findById(hexId).then((todo) => {
+          expect(todo).toNotExist();
+          done();
+        }).catch((e) => done(e));
+      });
+  });
 
-  2)  When we pass in a valid ObjectID, but it doesn't match a doc, we get a 404
-      response.
+  it('should return 404 if todo not found', (done) => {
+    let hexId = new ObjectID().toHexString();
 
-  3)  When we do pass in a valid ObjectID that does match a doc, that the
-      document actually comes back in the response body.
-*/
+    request(app)
+      .delete(`/todos/${hexId}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 404 if object id is invalid', (done) => {
+    request(app)
+      .delete('/todos/123abc')
+      .expect(404)
+      .end(done);
+  });
+
+}); // end describe block

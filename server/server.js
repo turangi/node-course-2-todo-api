@@ -70,8 +70,6 @@ app.delete('/todos/:id', (req, res) =>{
   });
 });
 
-// This route is going to use an HTTP Patch method.
-// Patch is what is used to update a resource
 app.patch('/todos/:id', (req, res) => {
   let id = req.params.id;
   let body = _.pick(req.body, ['text', 'completed']);
@@ -99,7 +97,23 @@ app.patch('/todos/:id', (req, res) => {
     res.status(400).send();
   })
 
-}); // end patch route
+});
+
+// POST /users
+app.post('/users', (req, res) => {
+  let body = _.pick(req.body, ['email', 'password']);
+  let user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) =>{
+    res.status(400).send(e);
+  })
+}); // end post route
+
+
 
 app.listen(port, () => {
   console.log(`Started up at port ${port}`);

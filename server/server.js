@@ -1,6 +1,5 @@
 require ('./config/config')
 
-
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -9,6 +8,7 @@ const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
+let {authenticate} = require('./middleware/authenticate');
 
 const app = express();
 const port = process.env.PORT;
@@ -85,8 +85,7 @@ app.patch('/todos/:id', (req, res) => {
     body.completedAt = null;
   }
 
-  // make query to update the database, similar to the method used in the
-  // playground file "mongodb-update".
+  // make query to update the database, similar to the method used in the playground file "mongodb-update".
   Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) =>{
     if(!todo) {
       return res.status(404).send();
@@ -96,7 +95,6 @@ app.patch('/todos/:id', (req, res) => {
   }).catch((e) => {
     res.status(400).send();
   })
-
 });
 
 // POST /users
@@ -111,9 +109,11 @@ app.post('/users', (req, res) => {
   }).catch((e) =>{
     res.status(400).send(e);
   })
-}); // end post route
+}); // end post /users route
 
-
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
+});
 
 app.listen(port, () => {
   console.log(`Started up at port ${port}`);
